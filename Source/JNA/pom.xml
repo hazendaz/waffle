@@ -101,6 +101,7 @@
         <module>waffle-tomcat85</module>
         <module>waffle-tomcat9</module>
         <module>waffle-tomcat10</module>
+        <module>waffle-wildfly</module>
     </modules>
 
     <scm>
