@@ -163,7 +163,7 @@ public class NegotiateAuthenticator extends WaffleAuthenticator {
         }
 
         this.log.debug("authorization required");
-        this.sendUnauthorized(response);
+        // this.sendUnauthorized(response);
         return false;
     }
 }
