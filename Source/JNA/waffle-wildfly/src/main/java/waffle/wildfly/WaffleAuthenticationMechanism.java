@@ -14,9 +14,9 @@
 package waffle.wildfly;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Map;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,6 +32,7 @@ import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormParserFactory;
 import io.undertow.servlet.handlers.ServletRequestContext;
+import waffle.jaas.WindowsLoginModule;
 import waffle.windows.auth.impl.WindowsAccountImpl;
 
 /**
@@ -76,10 +77,10 @@ public class WaffleAuthenticationMechanism implements AuthenticationMechanism {
     @Override
     public AuthenticationMechanismOutcome authenticate(final HttpServerExchange exchange,
             final SecurityContext securityContext) {
-        final ServletRequestContext servletRequestContext = exchange
+        final ServletRequestContext context = exchange
                 .getAttachment(ServletRequestContext.ATTACHMENT_KEY);
-        final HttpServletRequest request = servletRequestContext.getOriginalRequest();
-        final HttpServletResponse response = servletRequestContext.getOriginalResponse();
+        final HttpServletRequest request = context.getOriginalRequest();
+        final HttpServletResponse response = context.getOriginalResponse();
 
         /** Temp to see what's in context **/
 //        WaffleHandler handler = new WaffleHandler();
@@ -88,12 +89,20 @@ public class WaffleAuthenticationMechanism implements AuthenticationMechanism {
 //        } catch (Exception e1) {
 //            // Do nothing
 //        }
+        WaffleLogonModule logon = new WaffleLogonModule();
+        try {
+            logon.login();
+        } catch (LoginException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
+        Principal principal = null;
         String accountName = WindowsAccountImpl.getCurrentUsername();
         try {
             // If accountName is null try using authenticator but that requires my hard-coded identity.
-            if (accountName == null && this.authenticator.authenticate(request, response)) {
-                final Principal principal = this.authenticator.doLogin(WindowsAccountImpl.getCurrentUsername(), "XXXXXXXX");
+            if (!this.authenticator.authenticate(request, response)) {
+                principal = this.authenticator.doLogin(WindowsAccountImpl.getCurrentUsername(), "Hookah0%");
                 accountName = principal == null ? null : principal.getName();
             }
         } catch (final Exception e) {
@@ -105,11 +114,12 @@ public class WaffleAuthenticationMechanism implements AuthenticationMechanism {
             return AuthenticationMechanismOutcome.NOT_AUTHENTICATED;
         }
 
-        final SimplePrincipal principal = new SimplePrincipal(accountName, String.valueOf(UPTIME));
+        if (principal == null) {
+            principal = new SimplePrincipal(accountName, String.valueOf(UPTIME));
+        }
 
         final IdentityManager identityManager = securityContext.getIdentityManager();
-        Account account = identityManager
-                .verify(new AccountImpl(principal, Collections.<String> emptySet(), principal.getCredential()));
+        Account account = identityManager.verify(new AccountImpl(principal));
         if (account == null) {
             account = new AccountImpl(accountName);
         }
