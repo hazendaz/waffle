@@ -90,4 +90,8 @@ public class MockWindowsSecurityContext implements IWindowsSecurityContext {
         // Do Nothing
     }
 
+    @Override
+    public void close() {
+        // Do Nothing
+    }
 }

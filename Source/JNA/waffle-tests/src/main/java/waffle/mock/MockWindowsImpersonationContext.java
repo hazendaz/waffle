@@ -18,4 +18,8 @@ public class MockWindowsImpersonationContext implements IWindowsImpersonationCon
         // Do Nothing
     }
 
+    @Override
+    public void close() {
+        // Do Nothing
+    }
 }
