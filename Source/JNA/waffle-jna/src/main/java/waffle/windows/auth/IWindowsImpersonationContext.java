@@ -26,10 +26,13 @@ package waffle.windows.auth;
 /**
  * A Windows impersonation context.
  */
-public interface IWindowsImpersonationContext {
+public interface IWindowsImpersonationContext extends AutoCloseable {
 
     /**
      * Terminate the impersonation of a client application.
      */
     void revertToSelf();
+
+    @Override
+    void close();
 }

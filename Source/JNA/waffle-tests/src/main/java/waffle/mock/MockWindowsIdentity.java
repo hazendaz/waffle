@@ -93,4 +93,8 @@ public class MockWindowsIdentity implements IWindowsIdentity {
         return new MockWindowsImpersonationContext();
     }
 
+    @Override
+    public void close() {
+        // Do Nothing
+    }
 }
