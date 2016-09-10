@@ -173,21 +173,12 @@ public class NegotiateSecurityFilter implements Filter {
         if (!authorizationHeader.isNull()) {
 
             // log the user in using the token
-            IWindowsIdentity windowsIdentity;
-            try {
-                windowsIdentity = this.providers.doFilter(request, response);
+            try (IWindowsIdentity windowsIdentity = this.providers.doFilter(request, response)) {
+                // TODO I don't think null is possible here
                 if (windowsIdentity == null) {
                     return;
                 }
-            } catch (final IOException e) {
-                NegotiateSecurityFilter.LOGGER.warn("error logging in user: {}", e.getMessage());
-                NegotiateSecurityFilter.LOGGER.trace("", e);
-                this.sendUnauthorized(response, true);
-                return;
-            }
 
-            IWindowsImpersonationContext ctx = null;
-            try {
                 if (!this.allowGuestLogin && windowsIdentity.isGuest()) {
                     NegotiateSecurityFilter.LOGGER.warn("guest login disabled: {}", windowsIdentity.getFqn());
                     this.sendUnauthorized(response, true);
@@ -198,6 +189,7 @@ public class NegotiateSecurityFilter implements Filter {
                         windowsIdentity.getSidString());
 
                 final HttpSession session = request.getSession(true);
+                // TODO This is not possible as this creates a session so it cannot be null
                 if (session == null) {
                     throw new ServletException("Expected HttpSession");
                 }
@@ -227,17 +219,17 @@ public class NegotiateSecurityFilter implements Filter {
 
                 if (this.impersonate) {
                     NegotiateSecurityFilter.LOGGER.debug("impersonating user");
-                    ctx = windowsIdentity.impersonate();
-                }
-
-                chain.doFilter(requestWrapper, response);
-            } finally {
-                if (this.impersonate && ctx != null) {
-                    NegotiateSecurityFilter.LOGGER.debug("terminating impersonation");
-                    ctx.revertToSelf();
+                    try (IWindowsImpersonationContext ctx = windowsIdentity.impersonate()) {
+                        chain.doFilter(requestWrapper, response);
+                    }
                 } else {
-                    windowsIdentity.dispose();
+                    chain.doFilter(requestWrapper, response);
                 }
+            } catch (final IOException e) {
+                NegotiateSecurityFilter.LOGGER.warn("error logging in user: {}", e.getMessage());
+                NegotiateSecurityFilter.LOGGER.trace("", e);
+                this.sendUnauthorized(response, true);
+                return;
             }
 
             return;
@@ -298,18 +290,13 @@ public class NegotiateSecurityFilter implements Filter {
 
             final NegotiateRequestWrapper requestWrapper = new NegotiateRequestWrapper(request, windowsPrincipal);
 
-            IWindowsImpersonationContext ctx = null;
             if (this.impersonate) {
                 NegotiateSecurityFilter.LOGGER.debug("re-impersonating user");
-                ctx = windowsPrincipal.getIdentity().impersonate();
-            }
-            try {
-                chain.doFilter(requestWrapper, response);
-            } finally {
-                if (this.impersonate && ctx != null) {
-                    NegotiateSecurityFilter.LOGGER.debug("terminating impersonation");
-                    ctx.revertToSelf();
+                try (IWindowsImpersonationContext ctx = windowsPrincipal.getIdentity().impersonate()) {
+                    chain.doFilter(requestWrapper, response);
                 }
+            } else {
+                chain.doFilter(requestWrapper, response);
             }
         } else {
             NegotiateSecurityFilter.LOGGER.debug("previously authenticated user: {}", principal.getName());
