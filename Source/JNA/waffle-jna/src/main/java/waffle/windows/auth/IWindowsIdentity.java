@@ -26,7 +26,7 @@ package waffle.windows.auth;
 /**
  * A Windows Identity.
  */
-public interface IWindowsIdentity {
+public interface IWindowsIdentity extends AutoCloseable {
 
     /**
      * Sid.
@@ -74,4 +74,7 @@ public interface IWindowsIdentity {
      * @return True if the identity represents a Guest account, false otherwise.
      */
     boolean isGuest();
+
+    @Override
+    void close();
 }

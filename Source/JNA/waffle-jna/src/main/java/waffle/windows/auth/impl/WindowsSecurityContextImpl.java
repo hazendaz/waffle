@@ -99,24 +99,18 @@ public class WindowsSecurityContextImpl implements IWindowsSecurityContext {
      */
     public static IWindowsSecurityContext getCurrent(final String securityPackage, final String targetName) {
         IWindowsCredentialsHandle credentialsHandle = WindowsCredentialsHandleImpl.getCurrent(securityPackage);
-        credentialsHandle.initialize();
-        try {
-            final WindowsSecurityContextImpl ctx = new WindowsSecurityContextImpl();
-            ctx.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
-            ctx.setCredentialsHandle(credentialsHandle);
-            ctx.setSecurityPackage(securityPackage);
-            ctx.initialize(null, null, targetName);
 
-            // Starting from here ctx 'owns' the credentials handle, so let's null out the
-            // variable. This will prevent the finally block below from disposing it right away.
-            credentialsHandle = null;
+        final WindowsSecurityContextImpl ctx = new WindowsSecurityContextImpl();
+        ctx.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
+        ctx.setCredentialsHandle(credentialsHandle);
+        ctx.setSecurityPackage(securityPackage);
+        ctx.initialize(null, null, targetName);
 
-            return ctx;
-        } finally {
-            if (credentialsHandle != null) {
-                credentialsHandle.dispose();
-            }
-        }
+        // Starting from here ctx 'owns' the credentials handle, so let's null out the
+        // variable. This will prevent disposing it right away.
+        credentialsHandle = null;
+
+        return ctx;
     }
 
     @Override

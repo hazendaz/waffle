@@ -38,9 +38,8 @@ class WindowsCredentialsHandleTest {
      */
     @Test
     void testGetCurrent() {
-        final IWindowsCredentialsHandle handle = WindowsCredentialsHandleImpl.getCurrent("Negotiate");
-        Assertions.assertNotNull(handle);
-        handle.initialize();
-        handle.dispose();
+        try (final IWindowsCredentialsHandle handle = WindowsCredentialsHandleImpl.getCurrent("Negotiate")) {
+            Assertions.assertNotNull(handle);
+        }
     }
 }

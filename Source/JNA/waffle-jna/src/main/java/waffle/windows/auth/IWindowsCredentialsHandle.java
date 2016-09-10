@@ -25,10 +25,12 @@ package waffle.windows.auth;
 
 import com.sun.jna.platform.win32.Sspi.CredHandle;
 
+import java.io.Closeable;
+
 /**
  * Windows credentials handle.
  */
-public interface IWindowsCredentialsHandle {
+public interface IWindowsCredentialsHandle extends Closeable {
     /**
      * Initialize.
      */
@@ -45,4 +47,7 @@ public interface IWindowsCredentialsHandle {
      * @return CredHandle.
      */
     CredHandle getHandle();
+
+    @Override
+    void close();
 }
