@@ -144,15 +144,7 @@ public class WindowsLoginModule implements LoginModule {
                     .replace("{}", e.getCallback().getClass().getName()));
         }
 
-        IWindowsIdentity windowsIdentity;
-        try {
-            windowsIdentity = this.auth.logonUser(userName, password);
-        } catch (final Exception e) {
-            WindowsLoginModule.LOGGER.trace("", e);
-            throw new LoginException(e.getMessage());
-        }
-
-        try {
+        try (IWindowsIdentity windowsIdentity = this.auth.logonUser(userName, password)) {
             // disable guest login
             if (!this.allowGuestLogin && windowsIdentity.isGuest()) {
                 WindowsLoginModule.LOGGER.debug("guest login disabled: {}", windowsIdentity.getFqn());
@@ -172,10 +164,10 @@ public class WindowsLoginModule implements LoginModule {
             this.username = windowsIdentity.getFqn();
             WindowsLoginModule.LOGGER.debug("successfully logged in {} ({})", this.username,
                     windowsIdentity.getSidString());
-        } finally {
-            windowsIdentity.dispose();
+        } catch (final Exception e) {
+            WindowsLoginModule.LOGGER.trace("", e);
+            throw new LoginException(e.getMessage());
         }
-
         return true;
     }
 
