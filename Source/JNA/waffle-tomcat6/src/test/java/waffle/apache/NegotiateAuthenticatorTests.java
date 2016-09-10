@@ -11,7 +11,6 @@
  */
 package waffle.apache;
 
-import org.apache.catalina.Context;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Assert;
@@ -25,9 +24,12 @@ import com.sun.jna.platform.win32.Sspi;
 import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
 
 import mockit.Mocked;
+
+import waffle.apache.catalina.SimpleContext;
 import waffle.apache.catalina.SimpleHttpRequest;
 import waffle.apache.catalina.SimpleHttpResponse;
-import waffle.windows.auth.IWindowsCredentialsHandle;
+import waffle.apache.catalina.SimpleRealm;
+import waffle.apache.catalina.SimpleServletContext;
 import waffle.windows.auth.PrincipalFormat;
 import waffle.windows.auth.impl.WindowsAccountImpl;
 import waffle.windows.auth.impl.WindowsAuthProviderImpl;
@@ -48,7 +50,13 @@ public class NegotiateAuthenticatorTests {
     private NegotiateAuthenticator authenticator;
 
     @Mocked
-    Context                        context;
+    SimpleContext                  simpleContext;
+
+    @Mocked
+    SimpleServletContext           simpleServletContext;
+
+    @Mocked
+    SimpleRealm                    simpleRealm;
 
     /**
      * Sets the up.
@@ -56,7 +64,9 @@ public class NegotiateAuthenticatorTests {
     @Before
     public void setUp() {
         this.authenticator = new NegotiateAuthenticator();
-        this.authenticator.setContainer(this.context);
+        this.simpleContext.setServletContext(this.simpleServletContext);
+        this.simpleContext.setRealm(this.simpleRealm);
+        this.authenticator.setContainer(this.simpleContext);
         this.authenticator.start();
     }
 
@@ -103,16 +113,9 @@ public class NegotiateAuthenticatorTests {
     @Test
     public void testChallengePOST() {
         final String securityPackage = "Negotiate";
-        IWindowsCredentialsHandle clientCredentials = null;
-        WindowsSecurityContextImpl clientContext = null;
-        try {
-            // client credentials handle
-            clientCredentials = WindowsCredentialsHandleImpl.getCurrent(securityPackage);
-            clientCredentials.initialize();
-            // initial client security context
-            clientContext = new WindowsSecurityContextImpl();
+        WindowsSecurityContextImpl clientContext = new WindowsSecurityContextImpl();
             clientContext.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
-            clientContext.setCredentialsHandle(clientCredentials);
+            clientContext.setCredentialsHandle(WindowsCredentialsHandleImpl.getCurrent(securityPackage));
             clientContext.setSecurityPackage(securityPackage);
             clientContext.initialize(null, null, WindowsAccountImpl.getCurrentUsername());
             final SimpleHttpRequest request = new SimpleHttpRequest();
@@ -126,14 +129,7 @@ public class NegotiateAuthenticatorTests {
             Assert.assertEquals("keep-alive", response.getHeader("Connection"));
             Assert.assertEquals(2, response.getHeaderNames().length);
             Assert.assertEquals(401, response.getStatus());
-        } finally {
-            if (clientContext != null) {
-                clientContext.dispose();
-            }
-            if (clientCredentials != null) {
-                clientCredentials.dispose();
-            }
-        }
+        clientContext.dispose();
     }
 
     /**
@@ -151,16 +147,9 @@ public class NegotiateAuthenticatorTests {
     @Test
     public void testNegotiate() {
         final String securityPackage = "Negotiate";
-        IWindowsCredentialsHandle clientCredentials = null;
-        WindowsSecurityContextImpl clientContext = null;
-        try {
-            // client credentials handle
-            clientCredentials = WindowsCredentialsHandleImpl.getCurrent(securityPackage);
-            clientCredentials.initialize();
-            // initial client security context
-            clientContext = new WindowsSecurityContextImpl();
+        WindowsSecurityContextImpl clientContext = new WindowsSecurityContextImpl();
             clientContext.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
-            clientContext.setCredentialsHandle(clientCredentials);
+            clientContext.setCredentialsHandle(WindowsCredentialsHandleImpl.getCurrent(securityPackage));
             clientContext.setSecurityPackage(securityPackage);
             clientContext.initialize(null, null, WindowsAccountImpl.getCurrentUsername());
             // negotiate
@@ -198,14 +187,7 @@ public class NegotiateAuthenticatorTests {
                         WindowsAccountImpl.getCurrentUsername());
             }
             Assert.assertTrue(authenticated);
-        } finally {
-            if (clientContext != null) {
-                clientContext.dispose();
-            }
-            if (clientCredentials != null) {
-                clientCredentials.dispose();
-            }
-        }
+        clientContext.dispose();
     }
 
     /**
@@ -214,16 +196,9 @@ public class NegotiateAuthenticatorTests {
     @Test
     public void testPOSTEmpty() {
         final String securityPackage = "Negotiate";
-        IWindowsCredentialsHandle clientCredentials = null;
-        WindowsSecurityContextImpl clientContext = null;
-        try {
-            // client credentials handle
-            clientCredentials = WindowsCredentialsHandleImpl.getCurrent(securityPackage);
-            clientCredentials.initialize();
-            // initial client security context
-            clientContext = new WindowsSecurityContextImpl();
+        WindowsSecurityContextImpl clientContext = new WindowsSecurityContextImpl();
             clientContext.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
-            clientContext.setCredentialsHandle(clientCredentials);
+            clientContext.setCredentialsHandle(WindowsCredentialsHandleImpl.getCurrent(securityPackage));
             clientContext.setSecurityPackage(securityPackage);
             clientContext.initialize(null, null, WindowsAccountImpl.getCurrentUsername());
             // negotiate
@@ -272,14 +247,7 @@ public class NegotiateAuthenticatorTests {
                         WindowsAccountImpl.getCurrentUsername());
             }
             Assert.assertTrue(authenticated);
-        } finally {
-            if (clientContext != null) {
-                clientContext.dispose();
-            }
-            if (clientCredentials != null) {
-                clientCredentials.dispose();
-            }
-        }
+        clientContext.dispose();
     }
 
     /**

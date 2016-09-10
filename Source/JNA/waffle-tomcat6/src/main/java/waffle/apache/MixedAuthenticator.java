@@ -148,12 +148,10 @@ public class MixedAuthenticator extends WaffleAuthenticatorBase {
         }
 
         // log the user in using the token
-        IWindowsSecurityContext securityContext;
+        final byte[] tokenBuffer = authorizationHeader.getTokenBytes();
+        this.log.debug("token buffer: {} byte(s)", Integer.valueOf(tokenBuffer.length));
+        IWindowsSecurityContext securityContext = this.auth.acceptSecurityToken(connectionId, tokenBuffer, securityPackage);
 
-        try {
-            final byte[] tokenBuffer = authorizationHeader.getTokenBytes();
-            this.log.debug("token buffer: {} byte(s)", Integer.valueOf(tokenBuffer.length));
-            securityContext = this.auth.acceptSecurityToken(connectionId, tokenBuffer, securityPackage);
             this.log.debug("continue required: {}", Boolean.valueOf(securityContext.isContinue()));
 
             final byte[] continueTokenBytes = securityContext.getToken();
@@ -165,47 +163,41 @@ public class MixedAuthenticator extends WaffleAuthenticatorBase {
 
             if (securityContext.isContinue() || ntlmPost) {
                 response.setHeader("Connection", "keep-alive");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                response.flushBuffer();
+                try {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.flushBuffer();
+                } catch (final IOException e) {
+                    this.log.warn("error logging in user: {}", e.getMessage());
+                    this.log.trace("", e);
+                    this.sendUnauthorized(response);
+                }
                 return false;
             }
 
-        } catch (final IOException e) {
-            this.log.warn("error logging in user: {}", e.getMessage());
-            this.log.trace("", e);
-            this.sendUnauthorized(response);
-            return false;
-        }
+            // create and register the user principal with the session
+            try (final IWindowsIdentity windowsIdentity = securityContext.getIdentity()) {
 
-        // create and register the user principal with the session
-        final IWindowsIdentity windowsIdentity = securityContext.getIdentity();
+                // disable guest login
+                if (!this.allowGuestLogin && windowsIdentity.isGuest()) {
+                    this.log.warn("guest login disabled: {}", windowsIdentity.getFqn());
+                    this.sendUnauthorized(response);
+                    return false;
+                }
 
-        // disable guest login
-        if (!this.allowGuestLogin && windowsIdentity.isGuest()) {
-            this.log.warn("guest login disabled: {}", windowsIdentity.getFqn());
-            this.sendUnauthorized(response);
-            return false;
-        }
+                this.log.debug("logged in user: {} ({})", windowsIdentity.getFqn(), windowsIdentity.getSidString());
 
-        try {
-
-            this.log.debug("logged in user: {} ({})", windowsIdentity.getFqn(), windowsIdentity.getSidString());
-
-            final GenericWindowsPrincipal windowsPrincipal = new GenericWindowsPrincipal(windowsIdentity,
+                final GenericWindowsPrincipal windowsPrincipal = new GenericWindowsPrincipal(windowsIdentity,
                     this.context.getRealm(), this.principalFormat, this.roleFormat);
 
-            this.log.debug("roles: {}", windowsPrincipal.getRolesString());
+                this.log.debug("roles: {}", windowsPrincipal.getRolesString());
 
-            // create a session associated with this request if there's none
-            final HttpSession session = request.getSession(true);
-            this.log.debug("session id: {}", session == null ? "null" : session.getId());
+                // create a session associated with this request if there's none
+                final HttpSession session = request.getSession(true);
+                this.log.debug("session id: {}", session == null ? "null" : session.getId());
 
-            this.register(request, response, windowsPrincipal, securityPackage, windowsPrincipal.getName(), null);
-            this.log.info("successfully logged in user: {}", windowsPrincipal.getName());
-
-        } finally {
-            windowsIdentity.dispose();
-        }
+                this.register(request, response, windowsPrincipal, securityPackage, windowsPrincipal.getName(), null);
+                this.log.info("successfully logged in user: {}", windowsPrincipal.getName());
+            }
 
         return true;
     }
@@ -226,22 +218,14 @@ public class MixedAuthenticator extends WaffleAuthenticatorBase {
 
         this.log.debug("logging in: {}", username);
 
-        IWindowsIdentity windowsIdentity;
-        try {
-            windowsIdentity = this.auth.logonUser(username, password);
-        } catch (final Exception e) {
-            this.log.error(e.getMessage());
-            this.log.trace("", e);
-            return false;
-        }
+        try (IWindowsIdentity windowsIdentity = this.auth.logonUser(username, password)) {
 
-        // disable guest login
-        if (!this.allowGuestLogin && windowsIdentity.isGuest()) {
-            this.log.warn("guest login disabled: {}", windowsIdentity.getFqn());
-            return false;
-        }
+            // disable guest login
+            if (!this.allowGuestLogin && windowsIdentity.isGuest()) {
+                this.log.warn("guest login disabled: {}", windowsIdentity.getFqn());
+                return false;
+            }
 
-        try {
             this.log.debug("successfully logged in {} ({})", username, windowsIdentity.getSidString());
 
             final GenericWindowsPrincipal windowsPrincipal = new GenericWindowsPrincipal(windowsIdentity,
@@ -255,8 +239,10 @@ public class MixedAuthenticator extends WaffleAuthenticatorBase {
 
             this.register(request, response, windowsPrincipal, "FORM", windowsPrincipal.getName(), null);
             this.log.info("successfully logged in user: {}", windowsPrincipal.getName());
-        } finally {
-            windowsIdentity.dispose();
+        } catch (final Exception e) {
+            this.log.error(e.getMessage());
+            this.log.trace("", e);
+            return false;
         }
 
         return true;

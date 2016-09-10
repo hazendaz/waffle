@@ -11,7 +11,6 @@
  */
 package waffle.apache;
 
-import org.apache.catalina.Context;
 import org.apache.catalina.deploy.LoginConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
@@ -24,10 +23,13 @@ import com.sun.jna.platform.win32.Sspi;
 import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
 
 import mockit.Mocked;
+
+import waffle.apache.catalina.SimpleContext;
 import waffle.apache.catalina.SimpleHttpRequest;
 import waffle.apache.catalina.SimpleHttpResponse;
+import waffle.apache.catalina.SimpleRealm;
+import waffle.apache.catalina.SimpleServletContext;
 import waffle.mock.MockWindowsAuthProvider;
-import waffle.windows.auth.IWindowsCredentialsHandle;
 import waffle.windows.auth.impl.WindowsAccountImpl;
 import waffle.windows.auth.impl.WindowsCredentialsHandleImpl;
 import waffle.windows.auth.impl.WindowsSecurityContextImpl;
@@ -43,7 +45,13 @@ public class MixedAuthenticatorTests {
     private MixedAuthenticator authenticator;
 
     @Mocked
-    Context                    context;
+    SimpleContext              simpleContext;
+
+    @Mocked
+    SimpleServletContext       simpleServletContext;
+
+    @Mocked
+    SimpleRealm                simpleRealm;
 
     /**
      * Sets the up.
@@ -51,7 +59,9 @@ public class MixedAuthenticatorTests {
     @Before
     public void setUp() {
         this.authenticator = new MixedAuthenticator();
-        this.authenticator.setContainer(this.context);
+        this.simpleContext.setServletContext(this.simpleServletContext);
+        this.simpleContext.setRealm(this.simpleRealm);
+        this.authenticator.setContainer(this.simpleContext);
         this.authenticator.start();
     }
 
@@ -89,38 +99,30 @@ public class MixedAuthenticatorTests {
     @Test
     public void testChallengePOST() {
         final String securityPackage = "Negotiate";
-        IWindowsCredentialsHandle clientCredentials = null;
-        WindowsSecurityContextImpl clientContext = null;
-        try {
-            // client credentials handle
-            clientCredentials = WindowsCredentialsHandleImpl.getCurrent(securityPackage);
-            clientCredentials.initialize();
-            // initial client security context
-            clientContext = new WindowsSecurityContextImpl();
-            clientContext.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
-            clientContext.setCredentialsHandle(clientCredentials);
-            clientContext.setSecurityPackage(securityPackage);
-            clientContext.initialize(null, null, WindowsAccountImpl.getCurrentUsername());
-            final SimpleHttpRequest request = new SimpleHttpRequest();
-            request.setQueryString("j_negotiate_check");
-            request.setMethod("POST");
-            request.setContentLength(0);
-            final String clientToken = BaseEncoding.base64().encode(clientContext.getToken());
-            request.addHeader("Authorization", securityPackage + " " + clientToken);
-            final SimpleHttpResponse response = new SimpleHttpResponse();
-            this.authenticator.authenticate(request, response, null);
-            Assert.assertTrue(response.getHeader("WWW-Authenticate").startsWith(securityPackage + " "));
-            Assert.assertEquals("keep-alive", response.getHeader("Connection"));
-            Assert.assertEquals(2, response.getHeaderNames().length);
-            Assert.assertEquals(401, response.getStatus());
-        } finally {
-            if (clientContext != null) {
-                clientContext.dispose();
-            }
-            if (clientCredentials != null) {
-                clientCredentials.dispose();
-            }
-        }
+        final String clientToken;
+        WindowsSecurityContextImpl clientContext = new WindowsSecurityContextImpl();
+        // initial client security context
+        clientContext.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
+        clientContext.setCredentialsHandle(WindowsCredentialsHandleImpl.getCurrent(securityPackage));
+        clientContext.setSecurityPackage(securityPackage);
+        clientContext.initialize(null, null, WindowsAccountImpl.getCurrentUsername());
+        clientToken = BaseEncoding.base64().encode(clientContext.getToken());
+
+        final SimpleHttpRequest request = new SimpleHttpRequest();
+        request.setQueryString("j_negotiate_check");
+        request.setMethod("POST");
+        request.setContentLength(0);
+        request.addHeader("Authorization", securityPackage + " " + clientToken);
+
+        final SimpleHttpResponse response = new SimpleHttpResponse();
+
+        this.authenticator.authenticate(request, response, null);
+
+        Assert.assertTrue(response.getHeader("WWW-Authenticate").startsWith(securityPackage + " "));
+        Assert.assertEquals("keep-alive", response.getHeader("Connection"));
+        Assert.assertEquals(2, response.getHeaderNames().length);
+        Assert.assertEquals(401, response.getStatus());
+        clientContext.dispose();
     }
 
     /**
@@ -134,6 +136,9 @@ public class MixedAuthenticatorTests {
         final SimpleHttpRequest request = new SimpleHttpRequest();
         final SimpleHttpResponse response = new SimpleHttpResponse();
         Assert.assertFalse(this.authenticator.authenticate(request, response, loginConfig));
+        Assert.assertEquals(304, response.getStatus());
+        Assert.assertEquals("login.html", response.getHeader("Location"));
+        Assert.assertEquals(1, response.getHeaderNames().length);
     }
 
     /**
@@ -150,16 +155,9 @@ public class MixedAuthenticatorTests {
     @Test
     public void testNegotiate() {
         final String securityPackage = "Negotiate";
-        IWindowsCredentialsHandle clientCredentials = null;
-        WindowsSecurityContextImpl clientContext = null;
-        try {
-            // client credentials handle
-            clientCredentials = WindowsCredentialsHandleImpl.getCurrent(securityPackage);
-            clientCredentials.initialize();
-            // initial client security context
-            clientContext = new WindowsSecurityContextImpl();
+        WindowsSecurityContextImpl clientContext = new WindowsSecurityContextImpl();
             clientContext.setPrincipalName(WindowsAccountImpl.getCurrentUsername());
-            clientContext.setCredentialsHandle(clientCredentials);
+            clientContext.setCredentialsHandle(WindowsCredentialsHandleImpl.getCurrent(securityPackage));
             clientContext.setSecurityPackage(securityPackage);
             clientContext.initialize(null, null, WindowsAccountImpl.getCurrentUsername());
             // negotiate
@@ -192,14 +190,7 @@ public class MixedAuthenticatorTests {
                         WindowsAccountImpl.getCurrentUsername());
             }
             Assert.assertTrue(authenticated);
-        } finally {
-            if (clientContext != null) {
-                clientContext.dispose();
-            }
-            if (clientCredentials != null) {
-                clientCredentials.dispose();
-            }
-        }
+        clientContext.dispose();
     }
 
     /**
@@ -216,6 +207,9 @@ public class MixedAuthenticatorTests {
         request.addParameter("j_password", "password");
         final SimpleHttpResponse response = new SimpleHttpResponse();
         Assert.assertFalse(this.authenticator.authenticate(request, response, loginConfig));
+        Assert.assertEquals(304, response.getStatus());
+        Assert.assertEquals("error.html", response.getHeader("Location"));
+        Assert.assertEquals(1, response.getHeaderNames().length);
     }
 
     /**

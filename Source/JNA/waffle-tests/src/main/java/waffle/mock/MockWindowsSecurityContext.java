@@ -133,4 +133,9 @@ public class MockWindowsSecurityContext implements IWindowsSecurityContext {
             final String targetPrincipalName) {
         // Do Nothing
     }
+
+    @Override
+    public void close() {
+        // Do Nothing
+    }
 }

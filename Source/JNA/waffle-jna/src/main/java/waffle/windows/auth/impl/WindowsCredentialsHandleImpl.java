@@ -110,4 +110,9 @@ public class WindowsCredentialsHandleImpl implements IWindowsCredentialsHandle {
     public CredHandle getHandle() {
         return this.handle;
     }
+
+    @Override
+    public void close() {
+        this.dispose();
+    }
 }

@@ -16,10 +16,13 @@ package waffle.windows.auth;
  * 
  * @author dblock[at]dblock[dot]org
  */
-public interface IWindowsImpersonationContext {
+public interface IWindowsImpersonationContext extends AutoCloseable {
 
     /**
      * Terminate the impersonation of a client application.
      */
     void revertToSelf();
+
+    @Override
+    void close();
 }

@@ -28,4 +28,9 @@ public class MockWindowsImpersonationContext implements IWindowsImpersonationCon
     public void revertToSelf() {
         // Do Nothing
     }
+
+    @Override
+    public void close() {
+        // Do Nothing
+    }
 }

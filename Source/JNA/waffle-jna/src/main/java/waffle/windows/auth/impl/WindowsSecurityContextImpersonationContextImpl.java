@@ -54,4 +54,9 @@ public class WindowsSecurityContextImpersonationContextImpl implements IWindowsI
             throw new Win32Exception(rc);
         }
     }
+
+    @Override
+    public void close() {
+        this.revertToSelf();
+    }
 }

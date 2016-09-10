@@ -45,4 +45,10 @@ public class WindowsIdentityImpersonationContextImpl implements IWindowsImperson
     public void revertToSelf() {
         Advapi32.INSTANCE.RevertToSelf();
     }
+
+    @Override
+    public void close() {
+        this.revertToSelf();
+    }
+
 }
