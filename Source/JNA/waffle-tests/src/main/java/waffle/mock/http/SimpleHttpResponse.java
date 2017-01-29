@@ -103,11 +103,6 @@ public class SimpleHttpResponse extends HttpServletResponseWrapper {
         this.headers.put(headerName, current);
     }
 
-    @Override
-    public void setStatus(final int value) {
-        this.status = value;
-    }
-
     /**
      * Gets the status string.
      *
@@ -194,11 +189,6 @@ public class SimpleHttpResponse extends HttpServletResponseWrapper {
     public String getOutputText() {
         this.writer.flush();
         return this.bytes.toString(StandardCharsets.UTF_8);
-    }
-
-    @Override
-    public void setContentLength(int len) {
-        setHeader("Content-Length", Integer.toString(len));
     }
 
 }
