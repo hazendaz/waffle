@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Waffle (https://github.com/Waffle/waffle)
+
+    Copyright (c) 2010-2016 Application Security, Inc.
+
+    All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+    Public License v1.0 which accompanies this distribution, and is available at
+    https://www.eclipse.org/legal/epl-v10.html.
+
+    Contributors: Application Security, Inc.
+
+-->
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.waffle.demo</groupId>
+        <artifactId>waffle-demo-parent</artifactId>
+        <version>1.9.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>waffle-demo-springboot</artifactId>
+    <version>1.9.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>waffle-demo-springboot</name>
+    <description>Springboot Demo for WAFFLE</description>
+    <url>https://waffle.github.com/waffle/</url>
+
+    <scm>
+        <connection>scm:git:ssh://git@github.com/Waffle/waffle.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/Waffle/waffle.git</developerConnection>
+        <url>https://github.com/Waffle/waffle</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <springboot.version>1.5.7.RELEASE</springboot.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.waffle</groupId>
+            <artifactId>waffle-spring-security4</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.waffle</groupId>
+            <artifactId>waffle-tomcat85</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.name}</finalName>
+    </build>
+</project>

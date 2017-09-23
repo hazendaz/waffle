@@ -51,6 +51,7 @@
         <module>waffle-demo-mixed-post</module>
         <module>waffle-demo-negotiate</module>
         <module>waffle-demo-spring-boot-filter2</module>
+        <module>waffle-demo-springboot</module>
         <module>waffle-demo-spring-filter</module>
         <module>waffle-demo-spring-form</module>
     </modules>
@@ -95,6 +96,11 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.waffle</groupId>
+                <artifactId>waffle-spring-security5</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
