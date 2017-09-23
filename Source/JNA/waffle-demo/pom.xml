@@ -34,6 +34,7 @@
         <module>waffle-demo-mixed-post</module>
         <module>waffle-demo-negotiate</module>
         <module>waffle-demo-spring-boot-filter2</module>
+        <module>waffle-demo-springboot</module>
         <module>waffle-demo-spring-filter</module>
         <module>waffle-demo-spring-form</module>
     </modules>
@@ -84,6 +85,12 @@
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>${servlet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.waffle</groupId>
+                <artifactId>waffle-spring-security5</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
