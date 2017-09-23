@@ -49,6 +49,7 @@
         <module>waffle-mixed</module>
         <module>waffle-mixed-post</module>
         <module>waffle-negotiate</module>
+        <module>waffle-springboot</module>
         <module>waffle-spring-filter</module>
         <module>waffle-spring-form</module>
         <module>waffle-spring-boot-filter</module>
@@ -79,6 +80,21 @@
             <dependency>
                 <groupId>com.github.waffle</groupId>
                 <artifactId>waffle-tomcat7</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.waffle</groupId>
+                <artifactId>waffle-tomcat8</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.waffle</groupId>
+                <artifactId>waffle-tomcat85</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.waffle</groupId>
+                <artifactId>waffle-spring-security4</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
