@@ -27,6 +27,7 @@ import waffle.spring.NegotiateSecurityFilter;
 import waffle.spring.NegotiateSecurityFilterEntryPoint;
 import waffle.spring.WindowsAuthenticationProvider;
 import waffle.spring.WindowsAuthenticationToken;
+import waffle.windows.auth.IWindowsAuthProvider;
 import waffle.windows.auth.impl.WindowsAuthProviderImpl;
 
 /**
@@ -100,7 +101,7 @@ public class WaffleAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     WindowsAuthenticationProvider waffleSpringAuthenticationProvider(
-            final WindowsAuthProviderImpl waffleWindowsAuthProvider,
+            final IWindowsAuthProvider waffleWindowsAuthProvider,
             @Qualifier("defaultGrantedAuthority") final GrantedAuthority defaultGrantedAuthority,
             final GrantedAuthorityFactory grantedAuthorityFactory) {
         final WindowsAuthenticationProvider bean = new WindowsAuthenticationProvider();
@@ -125,7 +126,7 @@ public class WaffleAutoConfiguration {
     @Bean
     @ConditionalOnProperty("waffle.sso.enabled")
     @ConditionalOnMissingBean
-    NegotiateSecurityFilterProvider negotiateSecurityFilterProvider(final WindowsAuthProviderImpl windowsAuthProvider) {
+    NegotiateSecurityFilterProvider negotiateSecurityFilterProvider(final IWindowsAuthProvider windowsAuthProvider) {
         final NegotiateSecurityFilterProvider bean = new NegotiateSecurityFilterProvider(windowsAuthProvider);
         bean.setProtocols(this.properties.getSso().getProtocols());
         return bean;
@@ -143,7 +144,7 @@ public class WaffleAutoConfiguration {
     @Bean
     @ConditionalOnProperty("waffle.sso.enabled")
     @ConditionalOnMissingBean
-    BasicSecurityFilterProvider basicSecurityFilterProvider(final WindowsAuthProviderImpl windowsAuthProvider) {
+    BasicSecurityFilterProvider basicSecurityFilterProvider(final IWindowsAuthProvider windowsAuthProvider) {
         return new BasicSecurityFilterProvider(windowsAuthProvider);
     }
 
@@ -234,7 +235,7 @@ public class WaffleAutoConfiguration {
     @Bean
     @ConditionalOnProperty("waffle.sso.enabled")
     FilterRegistrationBean<NegotiateSecurityFilter> waffleNegotiateSecurityFilterRegistrationBean(
-            final NegotiateSecurityFilter filter) {
+            final Filter filter) {
         final FilterRegistrationBean<NegotiateSecurityFilter> bean = new FilterRegistrationBean<>(filter);
         bean.setEnabled(false);
         return bean;
