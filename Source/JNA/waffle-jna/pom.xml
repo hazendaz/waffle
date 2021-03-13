@@ -50,9 +50,9 @@
 
     <properties>
         <!-- Dependencies -->
-        <byte-buddy.version>1.10.19</byte-buddy.version>
-        <caffeine.version>2.8.8</caffeine.version>
-        <jna.version>5.6.0</jna.version>
+        <byte-buddy.version>1.10.22</byte-buddy.version>
+        <caffeine.version>3.0.0</caffeine.version>
+        <jna.version>5.7.0</jna.version>
         <powermock.version>2.0.9</powermock.version>
         <servlet.version>4.0.4</servlet.version>
 
