@@ -31,7 +31,7 @@
 
     <sec:http auto-config="true">
         <sec:intercept-url pattern="/login.jsp" access="isAnonymous()" />
-        <sec:intercept-url pattern="/**" access="isAuthenticated()" />
+        <sec:intercept-url pattern="/**" access="isFullyAuthenticated()" />
         <sec:form-login login-page="/login.jsp" login-processing-url="/j_spring_security_check"
             default-target-url="/index.jsp" authentication-failure-url="/login.jsp?login_error=1"
             username-parameter="j_username" password-parameter="j_password" />
