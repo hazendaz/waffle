@@ -26,12 +26,12 @@ package waffle.spring.boot;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -49,7 +49,7 @@ import waffle.windows.auth.impl.WindowsAuthProviderImpl;
 /**
  * Auto configuration for Spring Boot that configures beans based on properties defined in {@link WaffleProperties}.
  */
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(WaffleProperties.class)
 public class WaffleAutoConfiguration {
 
