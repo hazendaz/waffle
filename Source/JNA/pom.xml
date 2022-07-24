@@ -179,7 +179,7 @@
 
         <!-- Plugins -->
         <antrun.plugin>3.1.0</antrun.plugin>
-        <assembly.plugin>3.4.0</assembly.plugin>
+        <assembly.plugin>3.4.2</assembly.plugin>
         <build-helper.plugin>3.3.0</build-helper.plugin>
         <changelog.plugin>2.3</changelog.plugin>
         <changes.plugin>2.12.1</changes.plugin>
@@ -189,7 +189,7 @@
         <coveralls.plugin>4.4.1</coveralls.plugin>
         <dependency.plugin>3.3.0</dependency.plugin>
         <dependency-check.plugin>7.1.1</dependency-check.plugin>
-        <deploy.plugin>3.0.0-M2</deploy.plugin>
+        <deploy.plugin>3.0.0</deploy.plugin>
         <directory.plugin>1.0</directory.plugin>
         <enforcer.plugin>3.1.0</enforcer.plugin>
         <formatter.plugin>2.19.0</formatter.plugin>
@@ -197,7 +197,7 @@
         <gpg.plugin>3.0.1</gpg.plugin>
         <htmlcompressor.plugin>1.7.3</htmlcompressor.plugin>
         <impsort.plugin>1.7.0</impsort.plugin>
-        <install.plugin>3.0.0-M1</install.plugin>
+        <install.plugin>3.0.0</install.plugin>
         <jacoco.plugin>0.8.8</jacoco.plugin>
         <jar.plugin>3.2.2</jar.plugin>
         <javadoc.plugin>3.4.0</javadoc.plugin>
@@ -206,7 +206,7 @@
         <modernizer.plugin>2.4.0</modernizer.plugin>
         <nexus-staging.plugin>1.6.13</nexus-staging.plugin>
         <pmd.plugin>3.17.0</pmd.plugin>
-        <project-info-reports.plugin>3.3.0</project-info-reports.plugin>
+        <project-info-reports.plugin>3.4.0</project-info-reports.plugin>
         <release.plugin>3.0.0-M6</release.plugin>
         <resources.plugin>3.2.0</resources.plugin>
         <scm.plugin>1.13.0</scm.plugin>
@@ -214,7 +214,7 @@
         <spotbugs.plugin>4.7.1.0</spotbugs.plugin>
         <site.plugin>3.12.0</site.plugin>
         <sonar.plugin>3.9.1.2184</sonar.plugin>
-        <sortpom.plugin>3.1.3</sortpom.plugin>
+        <sortpom.plugin>3.2.0</sortpom.plugin>
         <surefire.plugin>3.0.0-M7</surefire.plugin>
         <taglist.plugin>3.0.0</taglist.plugin>
         <versions.plugin>2.11.0</versions.plugin>
@@ -228,7 +228,7 @@
         <build-tools.version>1.3.0</build-tools.version>
         <checkstyle.version>10.3.1</checkstyle.version>
         <doxia.version>1.11.1</doxia.version>
-        <extra-enforcer-rules.version>1.5.1</extra-enforcer-rules.version>
+        <extra-enforcer-rules.version>1.6.0</extra-enforcer-rules.version>
         <sb-contrib.version>7.4.7</sb-contrib.version>
         <findsecbugs.version>1.12.0</findsecbugs.version>
         <fluido.version>1.11.1</fluido.version>
