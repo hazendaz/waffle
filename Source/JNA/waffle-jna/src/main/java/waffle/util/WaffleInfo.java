@@ -50,6 +50,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import lombok.NoArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -61,6 +63,8 @@ import waffle.windows.auth.IWindowsComputer;
 import waffle.windows.auth.IWindowsDomain;
 import waffle.windows.auth.impl.WindowsAccountImpl;
 import waffle.windows.auth.impl.WindowsAuthProviderImpl;
+
+import lombok.NoArgsConstructor;
 
 /**
  * A Utility class to read system info to help troubleshoot WAFFLE system configuration.
@@ -93,6 +97,7 @@ import waffle.windows.auth.impl.WindowsAuthProviderImpl;
  * </code>
  * </pre>
  */
+@NoArgsConstructor
 public class WaffleInfo {
 
     /** The Constant LOGGER. */

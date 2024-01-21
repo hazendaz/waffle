@@ -41,6 +41,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import lombok.NoArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +57,7 @@ import waffle.windows.auth.impl.WindowsAuthProviderImpl;
  *
  * @see javax.security.auth.spi.LoginModule
  */
+@NoArgsConstructor
 public class WindowsLoginModule implements LoginModule {
 
     /** The Constant LOGGER. */

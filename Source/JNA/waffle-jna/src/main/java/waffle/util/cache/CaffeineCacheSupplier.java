@@ -23,9 +23,12 @@
  */
 package waffle.util.cache;
 
+import lombok.NoArgsConstructor;
+
 /**
  * A {@link CacheSupplier} supplying {@link CaffeineCache}.
  */
+@NoArgsConstructor
 public class CaffeineCacheSupplier implements CacheSupplier {
 
     @Override
