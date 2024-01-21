@@ -23,6 +23,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import lombok.NoArgsConstructor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -33,6 +35,7 @@ import waffle.util.WaffleInfo;
 /**
  * A servlet that returns WaffleInfo as XML.
  */
+@NoArgsConstructor
 public class WaffleInfoServlet extends HttpServlet {
 
     /** The Constant serialVersionUID. */

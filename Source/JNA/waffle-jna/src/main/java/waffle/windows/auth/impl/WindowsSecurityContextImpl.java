@@ -16,6 +16,8 @@ import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 import com.sun.jna.ptr.IntByReference;
 
+import lombok.NoArgsConstructor;
+
 import waffle.windows.auth.IWindowsCredentialsHandle;
 import waffle.windows.auth.IWindowsIdentity;
 import waffle.windows.auth.IWindowsImpersonationContext;
@@ -24,6 +26,7 @@ import waffle.windows.auth.IWindowsSecurityContext;
 /**
  * Windows Security Context.
  */
+@NoArgsConstructor
 public class WindowsSecurityContextImpl implements IWindowsSecurityContext {
 
     /** The principal name. */
