@@ -192,7 +192,7 @@
         <allowed.build.jdks note="Allow any 21, 25, 26, 27">[21,22),[25,26),[26,27),[27,28)</allowed.build.jdks>
 
         <!-- Checkstyle -->
-        <checkstyle.config>checkstyle.xml</checkstyle.config>
+        <checkstyle.config>checkstyle-4space.xml</checkstyle.config>
 
         <!-- Third Party Versions -->
         <assertj.version>3.27.6</assertj.version>
@@ -1323,6 +1323,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <dependencies>
+                    <dependency>
+                        <groupId>com.github.hazendaz</groupId>
+                        <artifactId>build-tools</artifactId>
+                        <version>${build-tools.version}</version>
+                    </dependency>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
