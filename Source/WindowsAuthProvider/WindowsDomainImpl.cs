@@ -12,9 +12,9 @@ namespace Waffle.Windows.AuthProvider
     [ClassInterface(ClassInterfaceType.None), ProgId("Waffle.Windows.Domain")]
     public class WindowsDomainImpl : IWindowsDomain
     {
-        private string _fqn;
-        private TrustDirection _trustDirection = TrustDirection.Bidirectional;
-        private TrustType _trustType = TrustType.Unknown;
+        private readonly string _fqn;
+        private readonly TrustDirection _trustDirection = TrustDirection.Bidirectional;
+        private readonly TrustType _trustType = TrustType.Unknown;
 
         /// <summary>
         /// Default constructor.
