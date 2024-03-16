@@ -12,7 +12,7 @@ namespace Waffle.Windows.AuthProvider.UnitTests
         private Netapi32.USER_INFO_1 _testUser;
         private String _testUserFqn;
         private Netapi32.NetJoinStatus _joinStatus = Netapi32.NetJoinStatus.NetSetupUnknownStatus;
-        private String _memberOf;
+        private string _memberOf;
         private String _computerName;
 
         [SetUp]
@@ -35,8 +35,7 @@ namespace Waffle.Windows.AuthProvider.UnitTests
             // fqn
             _testUserFqn = string.Format("{0}\\{1}", _computerName, _testUser.usri1_name);
             // join status 
-            IntPtr pDomain = IntPtr.Zero;
-            rc = Netapi32.NetGetJoinInformation(null, out pDomain, out _joinStatus);
+            rc = Netapi32.NetGetJoinInformation(null, out IntPtr pDomain, out _joinStatus);
             Assert.AreEqual(Netapi32.NERR_Success, rc, new Win32Exception(rc).Message);
             _memberOf = Marshal.PtrToStringAuto(pDomain);
             Netapi32.NetApiBufferFree(pDomain);

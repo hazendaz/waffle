@@ -9,9 +9,9 @@ namespace Waffle.Windows.AuthProvider
     /// </summary>
     public class WindowsComputerImpl : IWindowsComputer
     {
-        private string _computerName;
-        private string _memberOf;
-        private Netapi32.NetJoinStatus _joinStatus = Netapi32.NetJoinStatus.NetSetupUnknownStatus;
+        private readonly string _computerName;
+        private readonly string _memberOf;
+        private readonly Netapi32.NetJoinStatus _joinStatus = Netapi32.NetJoinStatus.NetSetupUnknownStatus;
 
         /// <summary>
         /// Default constructor for the current computer.
@@ -83,16 +83,14 @@ namespace Waffle.Windows.AuthProvider
                 try
                 {
                     int rc = 0;
-                    int entriesread = 0;
-                    int totalentries = 0;
                     int resume_handle = 0;
                     rc = Netapi32.NetLocalGroupEnum(
                         _computerName,
                         0,
                         out bufptr,
                         LMCons.MAX_PREFERRED_LENGTH,
-                        out entriesread,
-                        out totalentries,
+                        out int entriesread,
+                        out int totalentries,
                         ref resume_handle
                     );
 

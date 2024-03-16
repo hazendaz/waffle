@@ -14,13 +14,13 @@ namespace Waffle.Windows.AuthProvider
     /// </summary>
     public class WindowsSecurityContext : IWindowsSecurityContext, IDisposable
     {
-        private string _securityPackage;
-        private Secur32.SecBufferDesc _token = Secur32.SecBufferDesc.Zero;
-        private Secur32.SecHandle _context = Secur32.SecHandle.Zero;
-        private uint _contextAttributes = 0;
-        private Secur32.SECURITY_INTEGER _contextLifetime = Secur32.SECURITY_INTEGER.Zero;
-        private bool _continue = false;
-        private string _targetName;
+        private readonly string _securityPackage;
+        private Secur32.SecBufferDesc _token;
+        private Secur32.SecHandle _context;
+        private uint _contextAttributes;
+        private Secur32.SECURITY_INTEGER _contextLifetime;
+        private bool _continue;
+        private readonly string _targetName;
         private Secur32.SecHandle _credentials;
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Waffle.Windows.AuthProvider
         private void Initialize(Secur32.SecHandle credentials, string targetName, int fContextReq, int targetDataRep, Secur32.SecHandle context, Secur32.SecBufferDesc continueTokenBuffer)
         {
             var tokenSize = Secur32.MAX_TOKEN_SIZE;
-            var rc = 0;
+            int rc;
             var hasContextAndContinue = context != Secur32.SecHandle.Zero && continueTokenBuffer != Secur32.SecBufferDesc.Zero;
 
             do
@@ -268,8 +268,7 @@ namespace Waffle.Windows.AuthProvider
         {
             get
             {
-                IntPtr hToken = IntPtr.Zero;
-                int rc = Secur32.QuerySecurityContextToken(ref _context, out hToken);
+                int rc = Secur32.QuerySecurityContextToken(ref _context, out IntPtr hToken);
                 if (Secur32.SEC_E_OK != rc) throw new Win32Exception(rc);
                 return new WindowsIdentityImpl(new WindowsIdentity(hToken));
             }

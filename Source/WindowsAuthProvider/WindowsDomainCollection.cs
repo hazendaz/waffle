@@ -8,7 +8,7 @@ namespace Waffle.Windows.AuthProvider
     /// </summary>
     public class WindowsDomainCollection : ICollection<IWindowsDomain>, IEnumerable<IWindowsDomain>
     {
-        private List<IWindowsDomain> _domains = new List<IWindowsDomain>();
+        private readonly List<IWindowsDomain> _domains = new List<IWindowsDomain>();
 
         #region IEnumerable<IWindowsDomain> Members
 

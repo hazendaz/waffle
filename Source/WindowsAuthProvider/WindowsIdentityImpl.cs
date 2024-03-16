@@ -11,7 +11,7 @@ namespace Waffle.Windows.AuthProvider
     [ClassInterface(ClassInterfaceType.None), ProgId("Waffle.Windows.Identity")]
     public class WindowsIdentityImpl : IWindowsIdentity
     {
-        WindowsIdentity _identity;
+        readonly WindowsIdentity _identity;
 
         /// <summary>
         /// Security identifier in a string format.
@@ -45,18 +45,6 @@ namespace Waffle.Windows.AuthProvider
             get
             {
                 return _identity.Name;
-            }
-        }
-
-        /// <summary>
-        /// Unqualified username.
-        /// </summary>
-        private string Username
-        {
-            get
-            {
-                WindowsAccountName windowsAccountName = new WindowsAccountName(_identity.Name);
-                return windowsAccountName.AccountName;
             }
         }
 

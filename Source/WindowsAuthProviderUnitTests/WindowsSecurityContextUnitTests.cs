@@ -60,7 +60,8 @@ namespace Waffle.Windows.AuthProvider.UnitTests
         public void TestGetCurrentInvalidPackage()
         {
             Assert.Throws(Is.TypeOf<Win32Exception>().And.Message.EqualTo("The requested security package does not exist"),
-                delegate {
+                delegate
+                {
                     using (WindowsSecurityContext context = WindowsSecurityContext.GetCurrent(Guid.NewGuid().ToString(),
                         WindowsIdentity.GetCurrent().Name, 0, 0))
                     {

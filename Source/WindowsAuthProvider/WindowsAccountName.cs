@@ -7,8 +7,8 @@ namespace Waffle.Windows.AuthProvider
     /// </summary>
     public class WindowsAccountName
     {
-        private string _accountName = null;
-        private string _domainName = null;
+        private readonly string _accountName = null;
+        private readonly string _domainName = null;
 
         /// <summary>
         /// Account name.

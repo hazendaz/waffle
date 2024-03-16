@@ -10,7 +10,7 @@ namespace Waffle.Windows.AuthProvider
     [ClassInterface(ClassInterfaceType.None), ProgId("Waffle.Windows.ImpersonationContext")]
     public class WindowsImpersonationContextImpl : IWindowsImpersonationContext
     {
-        private WindowsImpersonationContext _ctx;
+        private readonly WindowsImpersonationContext _ctx;
 
         /// <summary>
         /// Create a new impersonation context wrapper.

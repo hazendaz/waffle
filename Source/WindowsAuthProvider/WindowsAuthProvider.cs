@@ -14,7 +14,7 @@ namespace Waffle.Windows.AuthProvider
     [ClassInterface(ClassInterfaceType.None), ProgId("Waffle.Windows.AuthProvider")]
     public class WindowsAuthProviderImpl : IWindowsAuthProvider
     {
-        private Dictionary<string, Secur32.SecHandle> _continueSecHandles = new Dictionary<string, Secur32.SecHandle>();
+        private readonly Dictionary<string, Secur32.SecHandle> _continueSecHandles = new Dictionary<string, Secur32.SecHandle>();
 
         /// <summary>
         /// Implementation of <see cref="T:Waffle.Windows.AuthProvider.IWindowsAuthProvider.LogonUser" />.
@@ -58,7 +58,6 @@ namespace Waffle.Windows.AuthProvider
                 if (hToken != null)
                 {
                     Kernel32.CloseHandle(hToken);
-                    hToken = IntPtr.Zero;
                 }
             }
         }
@@ -146,26 +145,23 @@ namespace Waffle.Windows.AuthProvider
             Secur32.SecHandle newContext = Secur32.SecHandle.Zero;
             Secur32.SecBufferDesc serverToken = Secur32.SecBufferDesc.Zero;
             Secur32.SecBufferDesc clientToken = Secur32.SecBufferDesc.Zero;
-            Secur32.SECURITY_INTEGER serverLifetime = Secur32.SECURITY_INTEGER.Zero;
-
             WindowsCredentialsHandle credentialsHandle = new WindowsCredentialsHandle(
                 string.Empty, Secur32.SECPKG_CRED_INBOUND, securityPackage);
 
             var tokenSize = Secur32.MAX_TOKEN_SIZE;
-            var rc = 0;
-
+            int rc;
             do
             {
                 serverToken = new Secur32.SecBufferDesc(tokenSize);
                 clientToken = new Secur32.SecBufferDesc(token);
-                uint serverContextAttributes = 0;
-
                 Secur32.SecHandle continueSecHandle = Secur32.SecHandle.Zero;
                 lock (_continueSecHandles)
                 {
                     _continueSecHandles.TryGetValue(connectionId, out continueSecHandle);
                 }
 
+                uint serverContextAttributes;
+                Secur32.SECURITY_INTEGER serverLifetime;
                 if (continueSecHandle == Secur32.SecHandle.Zero)
                 {
                     rc = Secur32.AcceptSecurityContext(

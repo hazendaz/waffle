@@ -64,8 +64,6 @@ import waffle.windows.auth.IWindowsDomain;
 import waffle.windows.auth.impl.WindowsAccountImpl;
 import waffle.windows.auth.impl.WindowsAuthProviderImpl;
 
-import lombok.NoArgsConstructor;
-
 /**
  * A Utility class to read system info to help troubleshoot WAFFLE system configuration.
  *
