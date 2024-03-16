@@ -22,8 +22,7 @@ namespace Waffle.Windows.AuthProvider.UnitTests
             // computer
             _computerName = Environment.MachineName;
             // join status 
-            IntPtr pDomain = IntPtr.Zero;
-            Assert.That(Netapi32.NERR_Success, Is.EqualTo(Netapi32.NetGetJoinInformation(null, out pDomain, out _joinStatus)));
+            Assert.That(Netapi32.NERR_Success, Is.EqualTo(Netapi32.NetGetJoinInformation(null, out IntPtr pDomain, out _joinStatus)));
             _memberOf = Marshal.PtrToStringAuto(pDomain);
             Netapi32.NetApiBufferFree(pDomain);
         }
